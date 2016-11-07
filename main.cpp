@@ -79,6 +79,11 @@ void tokenize(string user_input){
 }
 
 void execute_set_command(vector<string> tokens){
+  int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
+
+  if( index != variable_names.end() ) {
+    variable_values[index] = tokens[2];
+  }
   variable_names.push_back(tokens[1]);
   variable_values.push_back(tokens[2]);
 }

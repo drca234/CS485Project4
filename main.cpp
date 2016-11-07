@@ -55,8 +55,13 @@ void execute_set_command(vector<sting> tokens){
 
 }
 
+<<<<<<< HEAD
 void execute_def_prompt(vector<sting> tokens){
 
+=======
+void execute_set_command(string user_input){
+  int updatePosition = find( )
+>>>>>>> daniel
 }
 
 void execute_cd(vector<sting> tokens){

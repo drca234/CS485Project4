@@ -15,12 +15,14 @@ void execute_assignto(string);
 vector<string> process_names;
 vector<int> procoess_ids;
 
+vector<string> keys;
+vector<string> 
 int main(){
 
   string user_input, first_token;
   while (user_input != "done"){
     getline(cin, user_input);
-    first_token = find_first_token(user_input);
+    first_token = tokens[0];
     if (first_token == "%") {
       //Do nothing, as this is a comment
     }
@@ -49,33 +51,15 @@ int main(){
 
 }
 
-string find_first_token(string user_input){
-  string token;
-  bool leading_whitespace = false;
-  for (int i = 0; i < user_input.length(); i++){
-    if (leading_whitespace == false && user_input[i] != ' '){
-      leading_whitespace = true;
-      token += user_input[i];
-    }
-    else if (leading_whitespace == true && user_input[i] == ' '){
-      return token;
-    }
-    else {
-      token += user_input[i];
-    }
-  }
-  return "something went wrong";
-}
-
-void execute_set_command(string user_input){
+void execute_set_command(vector<sting> tokens){
 
 }
 
-void execute_def_prompt(string user_input){
+void execute_def_prompt(vector<sting> tokens){
 
 }
 
-void execute_cd(string user_input){
+void execute_cd(vector<sting> tokens){
 
 }
 
@@ -83,10 +67,10 @@ void execute_listprocs(){
 
 }
 
-void execute_run(string user_input){
+void execute_run(vector<sting> tokens){
 
 }
 
-void execute_assignto(string user_input){
+void execute_assignto(vector<sting> tokens){
 
 }

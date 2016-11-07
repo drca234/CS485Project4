@@ -21,14 +21,10 @@ int main(){
   string user_input, first_token;
   while (user_input != "done"){
     getline(cin, user_input);
-<<<<<<< HEAD
     first_token = find_first_token(user_input);
     if (first_token == "%") {
       //Do nothing, as this is a comment
     }
-=======
-    tokenize(user_input);
->>>>>>> kendall
     if (first_token == "set"){
       execute_set_command(user_input);
     }

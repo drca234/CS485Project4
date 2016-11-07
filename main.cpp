@@ -55,7 +55,7 @@ string find_first_token(string user_input){
 }
 
 void execute_set_command(string user_input){
-
+  int updatePosition = find( )
 }
 
 void execute_def_prompt(string user_input){

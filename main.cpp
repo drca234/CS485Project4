@@ -17,7 +17,7 @@ vector<int> procoess_ids;
 vector<string> tokens;
 
 vector<string> keys;
-vector<string> 
+vector<string>
 int main(){
 
   string user_input, first_token;
@@ -52,7 +52,6 @@ int main(){
 
 }
 
-<<<<<<< HEAD
 void tokenize(string user_input){
   string token;
   bool leading_whitespace = false;
@@ -76,9 +75,6 @@ void tokenize(string user_input){
 }
 
 void execute_set_command(string user_input){
-=======
-void execute_set_command(vector<sting> tokens){
->>>>>>> 6c5d551cff4bfdb815951358818903695c717c90
 
 }
 

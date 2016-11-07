@@ -4,7 +4,7 @@
 
 using namespace std;
 
-string find_first_token(string);
+void tokenize(string);
 void execute_set_command(string);
 void execute_def_prompt(string);
 void execute_cd(string);
@@ -14,9 +14,10 @@ void execute_assignto(string);
 
 vector<string> process_names;
 vector<int> procoess_ids;
+vector<string> tokens;
 
 vector<string> keys;
-vector<string> 
+vector<string>
 int main(){
 
   string user_input, first_token;
@@ -51,7 +52,29 @@ int main(){
 
 }
 
-void execute_set_command(vector<sting> tokens){
+void tokenize(string user_input){
+  string token;
+  bool leading_whitespace = false;
+  for (int i = 0; i < user_input.length(); i++){
+    if (leading_whitespace == false && user_input[i] != ' '){
+      leading_whitespace = true;
+      token += user_input[i];
+    }
+    else if (leading_whitespace == true && user_input[i] == ' '){
+      tokens.push_back(token);
+      token = "";
+    }
+    else if (i == user_input.length()-1){
+      token += user_input[i];
+      tokens.push_back(token);
+    }
+    else {
+      token += user_input[i];
+    }
+  }
+}
+
+void execute_set_command(string user_input){
 
 }
 

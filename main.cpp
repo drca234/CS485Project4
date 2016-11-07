@@ -4,7 +4,7 @@
 
 using namespace std;
 
-string find_first_token(string);
+void tokenize(string);
 void execute_set_command(string);
 void execute_def_prompt(string);
 void execute_cd(string);
@@ -14,16 +14,21 @@ void execute_assignto(string);
 
 vector<string> process_names;
 vector<int> procoess_ids;
+vector<string> tokens;
 
 int main(){
 
   string user_input, first_token;
   while (user_input != "done"){
     getline(cin, user_input);
+<<<<<<< HEAD
     first_token = find_first_token(user_input);
     if (first_token == "%") {
       //Do nothing, as this is a comment
     }
+=======
+    tokenize(user_input);
+>>>>>>> kendall
     if (first_token == "set"){
       execute_set_command(user_input);
     }
@@ -49,7 +54,7 @@ int main(){
 
 }
 
-string find_first_token(string user_input){
+void tokenize(string user_input){
   string token;
   bool leading_whitespace = false;
   for (int i = 0; i < user_input.length(); i++){
@@ -58,13 +63,17 @@ string find_first_token(string user_input){
       token += user_input[i];
     }
     else if (leading_whitespace == true && user_input[i] == ' '){
-      return token;
+      tokens.push_back(token);
+      token = "";
+    }
+    else if (i == user_input.length()-1){
+      token += user_input[i];
+      tokens.push_back(token);
     }
     else {
       token += user_input[i];
     }
   }
-  return "something went wrong";
 }
 
 void execute_set_command(string user_input){

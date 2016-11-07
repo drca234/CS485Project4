@@ -47,8 +47,21 @@ int main(){
 }
 
 string find_first_token(string user_input){
-
-  return "";
+  string token;
+  bool leading_whitespace = false;
+  for (int i = 0; i < user_input.length(); i++){
+    if (leading_whitespace == false && user_input[i] != ' '){
+      leading_whitespace = true;
+      token += user_input[i];
+    }
+    else if (leading_whitespace == true && user_input[i] == ' '){
+      return token;
+    }
+    else {
+      token += user_input[i];
+    }
+  }
+  return "something went wrong";
 }
 
 void execute_set_command(string user_input){

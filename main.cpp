@@ -1,7 +1,19 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+string find_first_token(string);
+void execute_set_command(string);
+void execute_def_prompt(string);
+void execute_cd(string);
+void execute_listprocs();
+void execute_run(string);
+void execute_assignto(string);
+
+vector<string> process_names;
+vector<int> procoess_ids;
 
 int main(){
 
@@ -31,5 +43,34 @@ int main(){
       cout << "Command not recognized\n";
     }
   }
+
+}
+
+string find_first_token(string user_input){
+
+  return "";
+}
+
+void execute_set_command(string user_input){
+
+}
+
+void execute_def_prompt(string user_input){
+
+}
+
+void execute_cd(string user_input){
+
+}
+
+void execute_listprocs(){
+
+}
+
+void execute_run(string user_input){
+
+}
+
+void execute_assignto(string user_input){
 
 }

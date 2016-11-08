@@ -9,18 +9,18 @@
 using namespace std;
 
 void tokenize(string);
-void execute_set_command(vector<char *>);
-string execute_def_prompt(vector<char *>);
-void execute_cd(vector<char *>);
+void execute_set_command(vector<string>);
+string execute_def_prompt(vector<string>);
+void execute_cd(vector<string>);
 void execute_listprocs();
-void execute_run(vector<char *>);
-void execute_assignto(vector<char *>);
+void execute_run(vector<string>);
+void execute_assignto(vector<string>);
 
-vector<char *> tokens;
-vector<char *> process_names;
+vector<string> tokens;
+vector<string> process_names;
 vector<pid_t> procoess_ids;
-vector<char *> variable_names;
-vector<char *> variable_values;
+vector<string> variable_names;
+vector<string> variable_values;
 
 int main(){
 
@@ -59,36 +59,29 @@ int main(){
 
 }
 
-void tokenize(const string user_input){
-  char *token = NULL, *duplicate_token = NULL;
+void tokenize(string user_input){
+  string token;
   bool leading_whitespace = false;
-  int token_index = 0;
   for (int i = 0; i < user_input.length(); i++){
     if (leading_whitespace == false && user_input[i] != ' '){
       leading_whitespace = true;
-      token[token_index] = user_input[i];
-      token_index += 1;
+      token += user_input[i];
     }
     else if (leading_whitespace == true && user_input[i] == ' '){
-      token[token_index] = '\0';
-      duplicate_token = strdup(token);
-      tokens.push_back(duplicate_token);
-      token_index = 0;
-      leading_whitespace = false;
-      // memset(token, 0 , strlen(token));
+      tokens.push_back(token);
+      token = "";
     }
     else if (i == user_input.length()-1){
-      token[token_index] = user_input[i];
+      token += user_input[i];
       tokens.push_back(token);
     }
     else {
-      token[token_index] = user_input[i];
-      token_index += 1;
+      token += user_input[i];
     }
   }
 }
 
-void execute_set_command(vector<char *> tokens){
+void execute_set_command(vector<string> tokens){
   // int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
   //
   // if( index != variable_names.end() ) {
@@ -98,11 +91,11 @@ void execute_set_command(vector<char *> tokens){
   variable_values.push_back(tokens[2]);
 }
 
-string execute_def_prompt(vector<char *> tokens){
+string execute_def_prompt(vector<string> tokens){
   return tokens[1];
 }
 
-void execute_cd(vector<char *> tokens){
+void execute_cd(vector<string> tokens){
   // char path[tokens[1].size()];
   // // path = tokens[1].c_str();
   // strncpy(path, tokens[1].c_str(), tokens[1].size());
@@ -116,8 +109,8 @@ void execute_cd(vector<char *> tokens){
 
 void execute_listprocs(){}
 
-void execute_run(vector<char *> tokens){
-  vector<char *> arguments;
+void execute_run(vector<string> tokens){
+  vector<string> arguments;
   for (int i = 0; i < tokens.size(); i++){
     if (i > 0){
       arguments.push_back(tokens[i]);
@@ -130,22 +123,16 @@ void execute_run(vector<char *> tokens){
     background_process = true;
   }
 
-  // const char *exec_command_name;
-  // int argc = arguments.size();
-  // const char *exec_arguments[argc];
-
   const char *exec_command_name;
-  exec_command_name = arguments[0];
-  arguments.push_back(NULL);
-  char **argv = &arguments[0];
-
-  // for (int i = 0; i < arguments.size(); i++){
-  //   for (int j = 0; j < arguments[i].length(); j++){
-  //     exec_arguments[i][j] = arguments[i][j];
-  //   }
-    // exec_arguments[i] = arguments[i].c_str();
-  // }
-
+  char *exec_arguments[1024];
+  exec_command_name = arguments[0].c_str();
+  for (int i = 0; i < arguments.size(); i++){
+    exec_arguments[i] = &arguments[i][0];
+    if (i == arguments.size()-1){
+      exec_arguments[i+1] = NULL;
+    }
+  }
+  // exec_arguments[arguments.size()] = NULL;
 
   pid_t pid;
   int status;
@@ -154,7 +141,7 @@ void execute_run(vector<char *> tokens){
     exit(1);
   }
   else if (pid == 0){
-    if (execvp(exec_command_name, argv) < 0){
+    if (execvp(exec_command_name, exec_arguments) < 0){
       cout << "There was an error in executing your command\n";
       exit(1);
     }
@@ -169,6 +156,6 @@ void execute_run(vector<char *> tokens){
   procoess_ids.push_back(pid);
 }
 
-void execute_assignto(vector<char *> tokens){
+void execute_assignto(vector<string> tokens){
 
 }

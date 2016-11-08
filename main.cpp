@@ -55,6 +55,7 @@ int main(){
     else {
       cout << "Command not recognized\n";
     }
+    tokens.clear();
   }
 
 }

@@ -96,15 +96,11 @@ string execute_def_prompt(vector<string> tokens){
 }
 
 void execute_cd(vector<string> tokens){
-  // char path[tokens[1].size()];
-  // // path = tokens[1].c_str();
-  // strncpy(path, tokens[1].c_str(), tokens[1].size());
-  // cout << tokens[1] << endl;
-  // cout << path << endl;
-  // int retval = chdir(path);
-  // if (retval < 0){
-  //   cout << "There was an error in changing directories\n";
-  // }
+  char *path = &tokens[1][0];
+  int retval = chdir(path);
+  if (retval < 0){
+    cout << "There was an error in changing directories\n";
+  }
 }
 
 void execute_listprocs(){}
@@ -132,7 +128,6 @@ void execute_run(vector<string> tokens){
       exec_arguments[i+1] = NULL;
     }
   }
-  // exec_arguments[arguments.size()] = NULL;
 
   pid_t pid;
   int status;

@@ -3,6 +3,7 @@
 #include <vector>
 #include <unistd.h>
 #include <cstdlib>
+#include <sys/wait.h>
 
 using namespace std;
 
@@ -119,18 +120,16 @@ void execute_run(vector<string> tokens){
     background_process = true;
   }
 
-  const char *exec_command_name[128], **exec_arguments[1024];
-  for (int i = 0; i < tokens[0].length(); i++){
-    exec_command_name[i] = &tokens[0][i];
-  }
+  const char *exec_command_name;
+  char *exec_arguments[arguments.size()];
 
-  // int index_count = 0;
-  // for (int i = 0; i < arguments.size(); i++){
-  //   for (int j = 0; j < arguments[i].length(); j++){
-  //     exec_arguments[index_count] = &arguments[i][j];
-  //     index_count += 1;
-  //   }
-  // }
+  exec_command_name = arguments[0].c_str();
+
+  for (int i = 0; i < arguments.size(); i++){
+    for (int j = 0; j < arguments[i].length(); j++){
+      exec_arguments[i][j] = arguments[i][j];
+    }
+  }
 
   pid_t pid;
   int status;

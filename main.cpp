@@ -104,7 +104,11 @@ void execute_cd(vector<string> tokens){
   }
 }
 
-void execute_listprocs(){}
+void execute_listprocs(){
+  for (int i = 0; i < process_names.size(); i++){
+    cout << "Process name:   " << process_names[i] << "   process ID:   " << procoess_ids[i] << endl;
+  }
+}
 
 void execute_run(vector<string> tokens){
   vector<string> arguments;
@@ -148,7 +152,7 @@ void execute_run(vector<string> tokens){
     }
   }
 
-  process_names.push_back(tokens[0]);
+  process_names.push_back(tokens[1]);
   procoess_ids.push_back(pid);
 }
 

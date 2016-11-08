@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <unistd.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ void execute_assignto(vector<string>);
 
 vector<string> tokens;
 vector<string> process_names;
-vector<int> procoess_ids;
+vector<pid_t> procoess_ids;
 vector<string> variable_names;
 vector<string> variable_values;
 
@@ -79,11 +80,11 @@ void tokenize(string user_input){
 }
 
 void execute_set_command(vector<string> tokens){
-  int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
-
-  if( index != variable_names.end() ) {
-    variable_values[index] = tokens[2];
-  }
+  // int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
+  //
+  // if( index != variable_names.end() ) {
+  //   variable_values[index] = tokens[2];
+  // }
   variable_names.push_back(tokens[1]);
   variable_values.push_back(tokens[2]);
 }
@@ -93,23 +94,64 @@ string execute_def_prompt(vector<string> tokens){
 }
 
 void execute_cd(vector<string> tokens){
-  char path[tokens[1].size()];
-  // path = tokens[1].c_str();
-  strncpy(path, tokens[1].c_str(), tokens[1].size());
-  cout << tokens[1] << endl;
-  cout << path << endl;
-  int retval = chdir(path);
-  if (retval < 0){
-    cout << "There was an error in changing directories\n";
-  }
+  // char path[tokens[1].size()];
+  // // path = tokens[1].c_str();
+  // strncpy(path, tokens[1].c_str(), tokens[1].size());
+  // cout << tokens[1] << endl;
+  // cout << path << endl;
+  // int retval = chdir(path);
+  // if (retval < 0){
+  //   cout << "There was an error in changing directories\n";
+  // }
 }
 
-void execute_listprocs(){
-
-}
+void execute_listprocs(){}
 
 void execute_run(vector<string> tokens){
+  vector<string> arguments;
+  for (int i = 0; i < tokens.size(); i++){
+    arguments.push_back(tokens[i]);
+  }
 
+  bool background_process = false;
+  if (arguments.back() == "&"){
+    arguments.pop_back();
+    background_process = true;
+  }
+
+  const char *exec_command_name[128], **exec_arguments[1024];
+  for (int i = 0; i < tokens[0].length(); i++){
+    exec_command_name[i] = &tokens[0][i];
+  }
+
+  // int index_count = 0;
+  // for (int i = 0; i < arguments.size(); i++){
+  //   for (int j = 0; j < arguments[i].length(); j++){
+  //     exec_arguments[index_count] = &arguments[i][j];
+  //     index_count += 1;
+  //   }
+  // }
+
+  pid_t pid;
+  int status;
+  if ((pid = fork()) < 0){
+    cout << "There was an error forking the process\n";
+    exit(1);
+  }
+  else if (pid == 0){
+    if (execvp(exec_command_name, exec_arguments) < 0){
+      cout << "There was an error in executing your command\n";
+      exit(1);
+    }
+  }
+  else {
+    if (!background_process){
+      waitpid(pid, &status, 0);
+    }
+  }
+
+  process_names.push_back(tokens[0]);
+  procoess_ids.push_back(pid);
 }
 
 void execute_assignto(vector<string> tokens){

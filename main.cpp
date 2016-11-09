@@ -15,6 +15,8 @@ void execute_cd(vector<string>);
 void execute_listprocs();
 void execute_run(vector<string>);
 void execute_assignto(vector<string>);
+void parse(vector<string>);
+string get_path();
 
 vector<string> tokens;
 vector<string> process_names;
@@ -25,6 +27,10 @@ vector<string> variable_values;
 int main(){
 
   string user_input, first_token, prompt = "sish > ";
+  string initialPath = "/bin:/usr/bin";
+  variable_names.push_back("PATH");
+  variable_values.push_back(initialPath);
+
   while (user_input != "done"){
     cout << prompt;
     getline(cin, user_input);
@@ -101,13 +107,13 @@ void tokenize(string user_input){
 }
 
 void parse( vector<string> tokens ) {
-  for( int i = 0; i < tokens.length(); i++ ) {
+  for( int i = 0; i < tokens.size(); i++ ) {
     if( tokens[i][0] == '$' ) {
       string lookup = "";
       for( int j = 1; j < tokens[i].length(); j++ ) { 
         lookup += tokens[i][j]; 
       }
-      int valueLocation = find( 0, variable_names.length(), lookup );
+      int valueLocation = find( 0, variable_names.size(), lookup );
       tokens[i] = variable_values[ valueLocation ];
     }
   }
@@ -192,4 +198,9 @@ void execute_run(vector<string> tokens){
 
 void execute_assignto(vector<string> tokens){
 
+}
+
+string get_path() {
+  int index = find( 0, variable_names.size(), "PATH" );
+  return variable_values[index];
 }

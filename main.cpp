@@ -76,13 +76,13 @@ void tokenize(string user_input){
       foundQuote = true; 
       // Quotes aren't part of the string, so just change the flag.
     }
-    if ( foundQuote && user_input[i] != '\"' ) {
+    else if ( foundQuote && user_input[i] != '\"' ) {
       token += user_input[i];
     }
-    if ( foundQuote && user_input[i] == '\"' ) {
+    else if ( foundQuote && user_input[i] == '\"' ) {
       foundQuote = false;
     }
-    if (leading_whitespace == false && user_input[i] != ' '){
+    else if (leading_whitespace == false && user_input[i] != ' '){
       leading_whitespace = true;
       token += user_input[i];
     }

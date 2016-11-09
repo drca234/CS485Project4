@@ -55,6 +55,13 @@ int main(){
     else {
       cout << "Command not recognized\n";
     }
+    int ShowTokensIndex = find( 0, variable_names, "ShowTokens" );
+    if( variable_values[ ShowTokensIndex ] == 1 ) {
+      cout << "You entered the following tokens: \n"
+      for( int i = 0; i < tokens.length(); i++ ) {
+        cout << token[i] << endl;
+      }
+    }
     tokens.clear();
   }
 
@@ -63,7 +70,9 @@ int main(){
 void tokenize(string user_input){
   string token;
   bool leading_whitespace = false;
+  bool 
   for (int i = 0; i < user_input.length(); i++){
+    if ( )
     if (leading_whitespace == false && user_input[i] != ' '){
       leading_whitespace = true;
       token += user_input[i];
@@ -83,13 +92,16 @@ void tokenize(string user_input){
 }
 
 void execute_set_command(vector<string> tokens){
-  // int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
-  //
-  // if( index != variable_names.end() ) {
-  //   variable_values[index] = tokens[2];
-  // }
-  variable_names.push_back(tokens[1]);
-  variable_values.push_back(tokens[2]);
+  // Check to see if the variable has already been declared
+  int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
+  
+  if( index != variable_names.end() ) {
+    variable_values[index] = tokens[2]; 
+  }
+  else {
+    variable_names.push_back(tokens[1]);
+    variable_values.push_back(tokens[2]);
+  }
 }
 
 string execute_def_prompt(vector<string> tokens){

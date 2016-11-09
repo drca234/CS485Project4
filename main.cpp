@@ -101,7 +101,16 @@ void tokenize(string user_input){
 }
 
 void parse( vector<string> tokens ) {
-
+  for( int i = 0; i < tokens.length(); i++ ) {
+    if( tokens[i][0] == '$' ) {
+      string lookup = "";
+      for( int j = 1; j < tokens[i].length(); j++ ) { 
+        lookup += tokens[i][j]; 
+      }
+      int valueLocation = find( 0, variable_names.length(), lookup );
+      tokens[i] = variable_values[ valueLocation ];
+    }
+  }
 }
 
 void execute_set_command(vector<string> tokens){

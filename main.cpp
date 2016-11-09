@@ -9,14 +9,14 @@
 using namespace std;
 
 void tokenize(string);
-void execute_set_command(vector<string>);
+int execute_set_command(vector<string>);
 string execute_def_prompt(vector<string>);
 void execute_cd(vector<string>);
 void execute_listprocs();
 void execute_run(vector<string>);
 void execute_assignto(vector<string>);
 void parse(vector<string>);
-string get_path();
+bool valid_variable(string);
 
 vector<string> tokens;
 vector<string> process_names;
@@ -30,6 +30,7 @@ int main(){
   string initialPath = "/bin:/usr/bin";
   variable_names.push_back("PATH");
   variable_values.push_back(initialPath);
+  setenv( "PATH", initialPath, 1 );
 
   while (user_input != "done"){
     cout << prompt;
@@ -42,6 +43,9 @@ int main(){
     }
     else if (first_token == "set"){
       execute_set_command(tokens);
+      if( tokens[1] == "PATH" ) {
+        setenv( "PATH", tokens[2], 1 );
+      }
     }
     else if (first_token == "defprompt"){
       prompt = execute_def_prompt(tokens);
@@ -119,16 +123,21 @@ void parse( vector<string> tokens ) {
   }
 }
 
-void execute_set_command(vector<string> tokens){
+int execute_set_command(vector<string> tokens){
   // Check to see if the variable has already been declared
   int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
-  
-  if( index != variable_names.end() ) {
-    variable_values[index] = tokens[2]; 
+  bool valid = valid_variable( token[1] );
+  if( valid ) {
+    if( index != variable_names.end() ) {
+      variable_values[index] = tokens[2]; 
+    }
+    else {
+      variable_names.push_back(tokens[1]);
+      variable_values.push_back(tokens[2]);
+    }
   }
   else {
-    variable_names.push_back(tokens[1]);
-    variable_values.push_back(tokens[2]);
+    cout << "Invalid variable name. Only letters or numbers may be used.\n";
   }
 }
 
@@ -200,7 +209,13 @@ void execute_assignto(vector<string> tokens){
 
 }
 
-string get_path() {
-  int index = find( 0, variable_names.size(), "PATH" );
-  return variable_values[index];
+bool valid_variable(string name) {
+  bool valid = true;
+  for( int i = 0; i < name.length(); i++ ) {
+    if( name[i] < '0' | ( name[i] > '9' && name[i] < 'A' ) |
+    ( name[i] > 'Z' && name[i] < 'a' ) | name[i] > 'z' ) {
+      valid = false;
+    }
+  }
+  return valid;
 }

@@ -70,9 +70,18 @@ int main(){
 void tokenize(string user_input){
   string token;
   bool leading_whitespace = false;
-  bool 
+  bool foundQuote = false;
   for (int i = 0; i < user_input.length(); i++){
-    if ( )
+    if ( !foundQuote && user_input[i] == '\"' ) {
+      foundQuote = true; 
+      // Quotes aren't part of the string, so just change the flag.
+    }
+    if ( foundQuote && user_input[i] != '\"' ) {
+      token += user_input[i];
+    }
+    if ( foundQuote && user_input[i] == '\"' ) {
+      foundQuote = false;
+    }
     if (leading_whitespace == false && user_input[i] != ' '){
       leading_whitespace = true;
       token += user_input[i];
@@ -89,6 +98,10 @@ void tokenize(string user_input){
       token += user_input[i];
     }
   }
+}
+
+void parse( vector<string> tokens ) {
+
 }
 
 void execute_set_command(vector<string> tokens){

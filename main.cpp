@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <sys/wait.h>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -206,7 +208,56 @@ void execute_run(vector<string> tokens){
 }
 
 void execute_assignto(vector<string> tokens){
+  vector<string> arguments;
+  for (int i = 2; i < tokens.size(); i++){
+      arguments.push_back(tokens[i]);
+  }
 
+  const char *exec_command_name;
+  char *exec_arguments[1024];
+  exec_command_name = arguments[0].c_str();
+  for (int i = 0; i < arguments.size(); i++){
+    exec_arguments[i] = &arguments[i][0];
+    if (i == arguments.size()-1){
+      exec_arguments[i+1] = NULL;
+    }
+  }
+  streambuf* oldCout = cout.rdbuf();
+  ostringstream strCout;
+  pid_t pid;
+  int status;
+  streambuf
+  if ((pid = fork()) < 0){
+    cout << "There was an error forking the process\n";
+    exit(1);
+  }
+  else if (pid == 0){
+    cout.rdbuf( strCout.rdbuf() );
+    if (execvp(exec_command_name, exec_arguments) < 0){
+      cout.rdbuf( oldCout );
+      cout << "There was an error in executing your command\n";
+      exit(1);
+    }
+  }
+  else {
+      waitpid(pid, &status, 0);
+  }
+  cout.rdbuf( oldCout );
+
+  int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
+  bool valid = valid_variable( token[1] );
+  if( valid ) {
+    if( index != variable_names.end() ) {
+      variable_values[index] = strCout.str(); 
+    }
+    else {
+      variable_names.push_back(tokens[1]);
+      variable_values.push_back(strCout.str());
+    }
+  }
+  else {
+    cout << "Invalid variable name. Only letters or numbers may be used.\n";
+  }
 }
 
 bool valid_variable(string name) {

@@ -7,6 +7,8 @@
 #include <sys/wait.h>
 #include <fstream>
 #include <sstream>
+#include <sys/types.h>
+#include <fcntl.h>
 
 using namespace std;
 
@@ -19,6 +21,7 @@ void execute_run(vector<string>);
 void execute_assignto(vector<string>);
 void parse(vector<string>);
 bool valid_variable(string);
+int search(vector<string>, string);
 
 vector<string> tokens;
 vector<string> process_names;
@@ -33,6 +36,8 @@ int main(){
   variable_names.push_back("PATH");
   variable_values.push_back(initialPath);
   setenv( "PATH", initialPath, 1 );
+  variable_names.push_back("ShowTokens");
+  variable_values.push_back("0");
 
   while (user_input != "done"){
     cout << prompt;
@@ -67,11 +72,11 @@ int main(){
     else {
       cout << "Command not recognized\n";
     }
-    int ShowTokensIndex = find( 0, variable_names, "ShowTokens" );
-    if( variable_values[ ShowTokensIndex ] == 1 ) {
-      cout << "You entered the following tokens: \n"
-      for( int i = 0; i < tokens.length(); i++ ) {
-        cout << token[i] << endl;
+    int ShowTokensIndex = search( variable_names, "ShowTokens" );
+    if( variable_values[ ShowTokensIndex ] == "1" ) {
+      cout << "You entered the following tokens: \n";
+      for( int i = 0; i < tokens.size(); i++ ) {
+        cout << tokens[i] << endl;
       }
     }
     tokens.clear();
@@ -119,18 +124,23 @@ void parse( vector<string> tokens ) {
       for( int j = 1; j < tokens[i].length(); j++ ) { 
         lookup += tokens[i][j]; 
       }
-      int valueLocation = find( 0, variable_names.size(), lookup );
-      tokens[i] = variable_values[ valueLocation ];
+      int valueLocation = search( variable_names, lookup );
+	  if (valueLocation != -1) {
+		  tokens[i] = variable_values[valueLocation];
+	  }
+	  else {
+		  tokens[i] = "";
+	  }
     }
   }
 }
 
 int execute_set_command(vector<string> tokens){
   // Check to see if the variable has already been declared
-  int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
-  bool valid = valid_variable( token[1] );
+  int index = search( variable_names, tokens[1]);
+  bool valid = valid_variable( tokens[1] );
   if( valid ) {
-    if( index != variable_names.end() ) {
+    if( index != -1 ) {
       variable_values[index] = tokens[2]; 
     }
     else {
@@ -222,19 +232,25 @@ void execute_assignto(vector<string> tokens){
       exec_arguments[i+1] = NULL;
     }
   }
-  streambuf* oldCout = cout.rdbuf();
-  ostringstream strCout;
   pid_t pid;
-  int status;
-  streambuf
+  int status, file, defaultout;
+
+  // I'm honestly not sure about the file opening and closing.
+  // There are some sources that say use fopen, some that use open.
+
+  defaultout = dup(1); // Make a copy to restore cout from
+  if ((file = open("temp", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {
+	  cout << "There was an error in the setup to execute your command.\n";
+  }
+  dup2(file, 1); // output to file
   if ((pid = fork()) < 0){
+	dup2(defaultout, 1);
     cout << "There was an error forking the process\n";
     exit(1);
   }
   else if (pid == 0){
-    cout.rdbuf( strCout.rdbuf() );
     if (execvp(exec_command_name, exec_arguments) < 0){
-      cout.rdbuf( oldCout );
+	  dup2(defaultout, 1);
       cout << "There was an error in executing your command\n";
       exit(1);
     }
@@ -242,17 +258,20 @@ void execute_assignto(vector<string> tokens){
   else {
       waitpid(pid, &status, 0);
   }
-  cout.rdbuf( oldCout );
+  dup2(defaultout, 1);
+  close(defaultout); // No longer need the reference
 
-  int index = find(variable_names.begin(), variable_names.end(), tokens[1]);
-  bool valid = valid_variable( token[1] );
+  char buf[1024];
+  int bytesread = read(file, buf, 1024);
+  int index = search(variable_names, tokens[1]);
+  bool valid = valid_variable( tokens[1] );
   if( valid ) {
-    if( index != variable_names.end() ) {
-      variable_values[index] = strCout.str(); 
+    if( index != -1 ) {
+      variable_values[index] = buf; 
     }
     else {
       variable_names.push_back(tokens[1]);
-      variable_values.push_back(strCout.str());
+      variable_values.push_back(buf);
     }
   }
   else {
@@ -269,4 +288,13 @@ bool valid_variable(string name) {
     }
   }
   return valid;
+}
+
+int search(vector<string> vec, string toFind) {
+	for (int i = 0; i < vec.size(); i++) {
+		if (vec[i] == toFind) {
+			return i; // Return the position if it's found.
+		}
+	}
+	return -1; // If not found, return -1.
 }

@@ -58,7 +58,7 @@ int main(){
     }
     else if (first_token == "set"){
       execute_set_command(tokens);
-      if( tokens[1] == "PATH" ) { //If path was updated, 
+      if( tokens[1] == "PATH" ) { //If path was updated,
         setenv( "PATH", tokens[2].c_str(), 1 ); //Update the environment as well
       }
     }
@@ -118,6 +118,7 @@ void tokenize(string user_input){
     else if (leading_whitespace == true && user_input[i] == ' '){
       tokens.push_back(token);
       token = "";
+      leading_whitespace = false;
     }
     else if (user_input[i] != ' ') {
       token += user_input[i];
@@ -152,7 +153,7 @@ int execute_set_command(vector<string> tokens){
   bool valid = valid_variable( tokens[1] ); // Check the validity of the name
   if( valid ) {
     if( index != -1 ) { // If it has, update it.
-      variable_values[index] = tokens[2]; 
+      variable_values[index] = tokens[2];
     }
     else { // If not, add the new variable and value.
       variable_names.push_back(tokens[1]);
@@ -272,7 +273,7 @@ void execute_assignto(vector<string> tokens){
   int bytesread = read(temp, buf, 1024);
   int index = search(variable_names, tokens[1]);
   bool valid = valid_variable( tokens[1] );
-  close(file); 
+  close(file);
   dup2(defaultout, 1); // Restore stdout
   close(defaultout);
   if( valid ) { // If it's valid, we update or add the variable and value.

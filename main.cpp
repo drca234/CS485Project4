@@ -48,6 +48,10 @@ int main(){
     // read user input, tokenize, and parse
     cout << prompt;
     getline(cin, user_input);
+    if (user_input == ""){ // case where CTRL-D was entered
+      cout << endl;
+      return 0;
+    }
     tokenize(user_input);
     parse();
     if(tokens.size() > 1) {
@@ -95,6 +99,8 @@ int main(){
     }
     tokens.clear(); // Clear the buffer for the next input.
   }
+
+  return 0;
 
 }
 

@@ -12,6 +12,7 @@
 
 using namespace std;
 
+// function prototpyes
 void tokenize(string);
 int execute_set_command(vector<string>);
 string execute_def_prompt(vector<string>);
@@ -23,6 +24,7 @@ void parse();
 bool valid_variable(string);
 int search(vector<string>, string);
 
+// global variables
 vector<string> tokens;
 vector<string> process_names;
 vector<pid_t> procoess_ids;
@@ -41,6 +43,7 @@ int main(){
   variable_names.push_back("ShowTokens");
   variable_values.push_back("0");
 
+  // loop until user enters "done"
   while (user_input != "done"){
     cout << prompt;
     getline(cin, user_input);

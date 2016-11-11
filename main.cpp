@@ -238,9 +238,6 @@ void execute_assignto(vector<string> tokens){
   pid_t pid;
   int status, file, defaultout;
 
-  // I'm honestly not sure about the file opening and closing.
-  // There are some sources that say use fopen, some that use open.
-
   defaultout = dup(1); // Make a copy to restore cout from
   close(1);
   if ((file = open("temp", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {

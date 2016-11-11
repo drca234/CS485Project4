@@ -63,6 +63,7 @@ General program flow of control:
   - loop until the user inputs "done"
     - read user input
     - tokenize the user input
+      - use the tokenize() and parse() functions
     - call the function to execute the command based on the leading token
       - notable functions:
         - execute_set_command()

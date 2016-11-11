@@ -87,6 +87,7 @@ int main(){
       execute_assignto(tokens);
     }
     else if (first_token == "done") {} //Prevents it from counting done as unrecognized.
+    else if (first_token == ""){}
     else {
       cout << "Command not recognized\n";
     }

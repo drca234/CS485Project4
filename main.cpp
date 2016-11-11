@@ -56,7 +56,7 @@ int main(){
       }
     }
     else if (first_token == "defprompt"){
-      prompt = execute_def_prompt(tokens);
+      prompt = execute_def_prompt(tokens) + " > ";
     }
     else if (first_token == "cd"){
       execute_cd(tokens);
@@ -92,7 +92,7 @@ void tokenize(string user_input){
   bool foundQuote = false;
   for (int i = 0; i < user_input.length(); i++){
     if ( !foundQuote && user_input[i] == '\"' ) {
-      foundQuote = true; 
+      foundQuote = true;
       // Quotes aren't part of the string, so just change the flag.
     }
     else if ( foundQuote && user_input[i] != '\"' ) {
@@ -127,8 +127,8 @@ void parse() {
   for( int i = 0; i < tokens.size(); i++ ) {
     if( tokens[i][0] == '$' ) {
       string lookup = "";
-      for( int j = 1; j < tokens[i].length(); j++ ) { 
-        lookup += tokens[i][j]; 
+      for( int j = 1; j < tokens[i].length(); j++ ) {
+        lookup += tokens[i][j];
       }
       int valueLocation = search( variable_names, lookup );
 	  if (valueLocation != -1) {
@@ -147,7 +147,7 @@ int execute_set_command(vector<string> tokens){
   bool valid = valid_variable( tokens[1] );
   if( valid ) {
     if( index != -1 ) {
-      variable_values[index] = tokens[2]; 
+      variable_values[index] = tokens[2];
     }
     else {
       variable_names.push_back(tokens[1]);
@@ -278,7 +278,7 @@ void execute_assignto(vector<string> tokens){
     if(contents.size() > 0)
       contents.resize(contents.size() - 1); // Gets rid of eof from string
     if( index != -1 ) {
-      variable_values[index] = contents; 
+      variable_values[index] = contents;
     }
     else {
       variable_names.push_back(tokens[1]);

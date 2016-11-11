@@ -19,7 +19,7 @@ void execute_cd(vector<string>);
 void execute_listprocs();
 void execute_run(vector<string>);
 void execute_assignto(vector<string>);
-void parse(vector<string>);
+void parse();
 bool valid_variable(string);
 int search(vector<string>, string);
 
@@ -35,14 +35,15 @@ int main(){
   string initialPath = "/bin:/usr/bin";
   variable_names.push_back("PATH");
   variable_values.push_back(initialPath);
-  setenv( "PATH", initialPath, 1 );
+  setenv( "PATH", initialPath.c_str(), 1 );
   variable_names.push_back("ShowTokens");
-  variable_values.push_back("0");
+  variable_values.push_back("1");
 
   while (user_input != "done"){
     cout << prompt;
     getline(cin, user_input);
     tokenize(user_input);
+    parse();
     first_token = tokens[0];
     if (first_token == "%") {
       //Do nothing, as this is a comment
@@ -51,7 +52,7 @@ int main(){
     else if (first_token == "set"){
       execute_set_command(tokens);
       if( tokens[1] == "PATH" ) {
-        setenv( "PATH", tokens[2], 1 );
+        setenv( "PATH", tokens[2].c_str(), 1 );
       }
     }
     else if (first_token == "defprompt"){
@@ -69,6 +70,7 @@ int main(){
     else if (first_token == "assignto"){
       execute_assignto(tokens);
     }
+    else if (first_token == "done") {} //Prevents it from counting done as unrecognized.
     else {
       cout << "Command not recognized\n";
     }
@@ -98,26 +100,30 @@ void tokenize(string user_input){
     }
     else if ( foundQuote && user_input[i] == '\"' ) {
       foundQuote = false;
+      tokens.push_back(token);
+      token = "";
     }
     else if (leading_whitespace == false && user_input[i] != ' '){
       leading_whitespace = true;
       token += user_input[i];
+      if(i == user_input.length() - 1) {
+        tokens.push_back(token);
+      }
     }
     else if (leading_whitespace == true && user_input[i] == ' '){
       tokens.push_back(token);
       token = "";
     }
-    else if (i == user_input.length()-1){
-      token += user_input[i];
-      tokens.push_back(token);
-    }
     else {
       token += user_input[i];
     }
   }
+  if(token != "") {
+    tokens.push_back(token);
+  }
 }
 
-void parse( vector<string> tokens ) {
+void parse() {
   for( int i = 0; i < tokens.size(); i++ ) {
     if( tokens[i][0] == '$' ) {
       string lookup = "";
@@ -239,10 +245,10 @@ void execute_assignto(vector<string> tokens){
   // There are some sources that say use fopen, some that use open.
 
   defaultout = dup(1); // Make a copy to restore cout from
+  close(1);
   if ((file = open("temp", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) < 0) {
 	  cout << "There was an error in the setup to execute your command.\n";
   }
-  dup2(file, 1); // output to file
   if ((pid = fork()) < 0){
 	dup2(defaultout, 1);
     cout << "There was an error forking the process\n";
@@ -250,7 +256,7 @@ void execute_assignto(vector<string> tokens){
   }
   else if (pid == 0){
     if (execvp(exec_command_name, exec_arguments) < 0){
-	  dup2(defaultout, 1);
+      dup2(defaultout, 1);
       cout << "There was an error in executing your command\n";
       exit(1);
     }
@@ -258,25 +264,31 @@ void execute_assignto(vector<string> tokens){
   else {
       waitpid(pid, &status, 0);
   }
-  dup2(defaultout, 1);
-  close(defaultout); // No longer need the reference
-
+  close(file);
+  int temp = open("temp", O_RDWR,S_IRUSR | S_IWUSR);
   char buf[1024];
-  int bytesread = read(file, buf, 1024);
+  int bytesread = read(temp, buf, 1024);
   int index = search(variable_names, tokens[1]);
   bool valid = valid_variable( tokens[1] );
+  close(file);
+  dup2(defaultout, 1);
+  close(defaultout);
   if( valid ) {
+    string contents(buf);
+    if(contents.size() > 0)
+      contents.resize(contents.size() - 1); // Gets rid of eof from string
     if( index != -1 ) {
-      variable_values[index] = buf; 
+      variable_values[index] = contents; 
     }
     else {
       variable_names.push_back(tokens[1]);
-      variable_values.push_back(buf);
+      variable_values.push_back(contents);
     }
   }
   else {
     cout << "Invalid variable name. Only letters or numbers may be used.\n";
   }
+  unlink("temp");
 }
 
 bool valid_variable(string name) {

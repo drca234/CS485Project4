@@ -17,7 +17,7 @@ void tokenize(string);
 int execute_set_command(vector<string>);
 string execute_def_prompt(vector<string>);
 void execute_cd(vector<string>);
-void execute_listprocs();
+void execute_listprocs(vector<string>, vector<pid_t>);
 void execute_run(vector<string>);
 void execute_assignto(vector<string>);
 void parse();
@@ -54,7 +54,7 @@ int main(){
     }
     tokenize(user_input);
     parse();
-    if(tokens.size() > 1) {
+    if(tokens.size() >= 1) {
       first_token = tokens[0]; // If there was input, get the first token.
     }
     else {
@@ -78,7 +78,7 @@ int main(){
       execute_cd(tokens);
     }
     else if (first_token == "listprocs"){
-      execute_listprocs();
+      execute_listprocs(process_names, procoess_ids);
     }
     else if (first_token == "run"){
       execute_run(tokens);
@@ -191,7 +191,7 @@ void execute_cd(vector<string> tokens){
   }
 }
 
-void execute_listprocs(){
+void execute_listprocs(vector<string> process_names, vector<pid_t> procoess_ids){
   for (int i = 0; i < process_names.size(); i++){
     cout << "Process name:   " << process_names[i] << "   process ID:   " << procoess_ids[i] << endl;
   }

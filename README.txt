@@ -79,8 +79,13 @@ General program flow of control:
             - uses execvp() to start the new process
           - waits or doesn't wait for child process
         - execute_assignto()
-          - DANIEL CAN YOU DO THIS?
+          - redirects stdout to a file
+          - forks a child process
+            - uses execvp() to start the new process
+          - resets stdout
+          - saves the result of the execvp() to the given variable, if the variable is valid
         - valid_variable()
-          - DANIEL
+          - checks the given string to see if it is alphanumeric
         - search()
-          - DANIEL
+          - looks in a given vector of strings for a given string
+            - returns the index if found, or -1 if not found

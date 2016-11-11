@@ -45,6 +45,7 @@ int main(){
 
   // loop until user enters "done"
   while (user_input != "done"){
+    // read user input, tokenize, and parse
     cout << prompt;
     getline(cin, user_input);
     tokenize(user_input);
@@ -59,6 +60,7 @@ int main(){
       //Do nothing, as this is a comment
       cout << "This is a comment\n";
     }
+    // begin calling the respective functions
     else if (first_token == "set"){
       execute_set_command(tokens);
       if( tokens[1] == "PATH" ) { //If path was updated,
@@ -96,10 +98,12 @@ int main(){
 
 }
 
+// function to "tokenize" the input
 void tokenize(string user_input){
   string token;
   bool leading_whitespace = false;
   bool foundQuote = false;
+  // iterate over the input string
   for (int i = 0; i < user_input.length(); i++){
     if ( !foundQuote && user_input[i] == '\"' ) {
       foundQuote = true;
@@ -111,7 +115,7 @@ void tokenize(string user_input){
     }
     else if ( foundQuote && user_input[i] == '\"' ) {
       foundQuote = false;
-      tokens.push_back(token);
+      tokens.push_back(token); // case where the string token is now full and needs to be added to the tokens vector
       token = "";
     } // Ending quote case
     else if (leading_whitespace == false && user_input[i] != ' '){
@@ -119,7 +123,7 @@ void tokenize(string user_input){
       token += user_input[i];
     }
     else if (leading_whitespace == true && user_input[i] == ' '){
-      tokens.push_back(token);
+      tokens.push_back(token); // case where a full token has been constructed and needs to be added to the tokens vector
       token = "";
       leading_whitespace = false;
     }
@@ -127,11 +131,12 @@ void tokenize(string user_input){
       token += user_input[i];
     }
   }
-  if(token != "") {
+  if(token != "") { // case where the final token was not entered into the tokens vector
     tokens.push_back(token);
   }
 }
 
+// parse the tokens and check for variables -- using the "$" metacharacter
 void parse() {
   for( int i = 0; i < tokens.size(); i++ ) {
     if( tokens[i][0] == '$' ) { // If it starts with a $, it's a variable.
@@ -210,6 +215,7 @@ void execute_run(vector<string> tokens){
     }
   } // Get the commands into the form for execvp
 
+  // fork, run, and (potentially) wait for the child process
   pid_t pid;
   int status;
   if ((pid = fork()) < 0){
@@ -217,14 +223,14 @@ void execute_run(vector<string> tokens){
     exit(1);
   }
   else if (pid == 0){
-    if (execvp(exec_command_name, exec_arguments) < 0){
+    if (execvp(exec_command_name, exec_arguments) < 0){ // this is the child process
       cout << "There was an error in executing your command\n";
       exit(1);
     }
   }
   else {
     if (!background_process){
-      waitpid(pid, &status, 0);
+      waitpid(pid, &status, 0); // case where we need to wait -- & wasn't entered
     }
   }
   // Add the names of the process to the process list

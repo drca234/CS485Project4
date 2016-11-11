@@ -106,15 +106,12 @@ void tokenize(string user_input){
     else if (leading_whitespace == false && user_input[i] != ' '){
       leading_whitespace = true;
       token += user_input[i];
-      if(i == user_input.length() - 1) {
-        tokens.push_back(token);
-      }
     }
     else if (leading_whitespace == true && user_input[i] == ' '){
       tokens.push_back(token);
       token = "";
     }
-    else {
+    else if (user_input[i] != ' ') {
       token += user_input[i];
     }
   }

@@ -48,7 +48,7 @@ int main(){
     // read user input, tokenize, and parse
     cout << prompt;
     getline(cin, user_input);
-    if (user_input == ""){ // case where CTRL-D was entered
+    if (cin.eof()){ // case where CTRL-D was entered
       cout << endl;
       return 0;
     }
